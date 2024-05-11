@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('partials/header') %>
+  <title>ToDoList</title>
+
+  <body>
+    <script src="assets/static/js/initTheme.js"></script>
+    <div id="app">
+      <%- include('partials/sidebar') %>
+      <div id="main">
+        <header class="mb-3">
+          <a href="#" class="burger-btn d-block d-xl-none">
+            <i class="bi bi-justify fs-3"></i>
+          </a>
+        </header>
+
+        <div class="page-heading">
+          <h2>To Do List</h2>
+        </div>
+        <div class="page-content">
+          <section class="row">
+            <div class="col-12 col-lg-9">
+              <div class="row">
+                <div class="col-6 col-lg-3 col-md-6">
+                  <div class="card">
+                    <div class="card-body px-4 py-4-5">
+                      <div class="row">
+                        <div
+                          class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start"
+                        >
+                          <div class="stats-icon purple mb-2">
+                            <i class="iconly-boldShow"></i>
+                          </div>
+                        </div>
+                        <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                          <h6 class="text-muted font-semibold">
+                            Undone Task
+                          </h6>
+                          <h6 class="font-extrabold mb-0" id="uncompleted-task-count">Loading...</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-lg-3 col-md-6">
+                  <div class="card">
+                    <div class="card-body px-4 py-4-5">
+                      <div class="row">
+                        <div
+                          class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start"
+                        >
+                          <div class="stats-icon blue mb-2">
+                            <i class="iconly-boldProfile"></i>
+                          </div>
+                        </div>
+                        <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                          <h6 class="text-muted font-semibold">Task Done</h6>
+                          <h6 class="font-extrabold mb-0" id="completed-task-count">Loading...</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Task -->
+          <section class="section">
+            <div class="row" id="basic-table">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Task</h3>
+                </div>
+                <div class="card-content">
+                  <div class="card-body">
+                    <div class="form-group">
+                      <!-- Button trigger for Add Task form modal -->
+                      <button
+                        type="button"
+                        class="btn btn-outline-success"
+                        data-bs-toggle="modal"
+                        data-bs-target="#inlineForm"
+                      >
+                        Add Task
+                      </button>
+
+                      <!--Add Task form Modal -->
+                      <div
+                        class="modal fade text-left"
+                        id="inlineForm"
+                        tabindex="-1"
+                        role="dialog"
+                        aria-labelledby="myModalLabel33"
+                        aria-hidden="true"
+                      >
+                        <div
+                          class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+                          role="document"
+                        >
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4 class="modal-title" id="myModalLabel33">
+                                Add Task
+                              </h4>
+                              <button
+                                type="button"
+                                class="close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                <i data-feather="x"></i>
+                              </button>
+                            </div>
+                            <form action="/tasks" method="post" id="taskForm">
+                              <div class="modal-body">
+                                <label for="task_name">Task Name: </label>
+                                <div class="form-group">
+                                  <input
+                                    id="task_name"
+                                    type="text"
+                                    placeholder="Task Name"
+                                    class="form-control"
+                                    name="task_name"
+                                  />
+                                </div>
+                                <label for="task_description">Task Description: </label>
+                                <div class="form-group">
+                                  <input
+                                    id="task_description"
+                                    type="text"
+                                    placeholder="Task Name"
+                                    class="form-control"
+                                    name="task_description"
+                                  />
+                                </div>
+                              <div class="modal-footer">
+                                <button
+                                  type="button"
+                                  class="btn btn-light-secondary"
+                                  data-bs-dismiss="modal"
+                                >
+                                  <i class="bx bx-x d-block d-sm-none"></i>
+                                  <span class="d-none d-sm-block">Close</span>
+                                </button>
+                                <button
+                                  type="submit"
+                                  class="btn btn-primary ms-1"
+                                  data-bs-dismiss="modal"
+                                  onclick="location.href='/';"
+                                >
+                                
+                                  <i class="bx bx-check d-block d-sm-none"></i>
+                                  <span class="d-none d-sm-block">Create</span>
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Table with outer spacing -->
+                    <div class="table-responsive">
+                      <table class="table table-lg" id="task-table">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>TASK NAME</th>
+                            <th>DESKRIPSI</th>
+                            <th class="text-center">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Task Done -->
+          <section class="section">
+            <div class="row" id="basic-table">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Done Task</h3>
+                </div>
+                <div class="card-content">
+                  <div class="card-body">
+                    <!-- Table with outer spacing -->
+                    <div class="table-responsive">
+                      <table class="table table-lg" id="done-task-table">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>TASK NAME</th>
+                            <th>DESKRIPSI</th>
+                            <th class="text-center">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+
+
+        </div>
+
+        <%- include('partials/footer') %>
+      </div>
+    </div>
+    <%- include('partials/script') %>
+
+
+    <script>
+      // Fetch JSON data from API endpoint
+      fetch('/tasks')
+          .then(response => response.json())
+          .then(data => {
+              const taskTableBody = document.querySelector('#task-table tbody');
+              const uncompletedTask = data.data.filter(task => task.task_status === false);
+
+  
+              // Iterate through the data array and generate table rows
+              uncompletedTask.forEach(task => {
+                  // Determine if the task is done (checked) or not (unchecked)
+                  const checkedAttribute = task.task_status ? 'checked' : '';
+  
+                  const newRow = `
+                      <tr>
+                          <td>${task.id}</td>
+                          <td>${task.task_name}</td>
+                          <td>${task.task_description}</td>
+                          <td class="text-center">
+                            <input type="checkbox" class="form-check-input form-check-success form-check-glow" name="customCheck" data-task-id="${task.id}" ${checkedAttribute} />
+                            <label class="form-check-label">${task.task_status ? '' : ''}</label>
+                          </td>
+                      </tr>
+                  `;
+                  taskTableBody.innerHTML += newRow;
+                  
+              });
+
+
+                const doneTaskTableBody = document.querySelector('#done-task-table tbody');
+                const completedTask = data.data.filter(task => task.task_status === true);
+                completedTask.forEach(task => {
+                    // Determine if the task is done (checked) or not (unchecked)
+                    const checkedAttribute = task.task_status ? 'checked' : '';
+    
+                    const newRow = `
+                        <tr>
+                            <td>${task.id}</td>
+                            <td>${task.task_name}</td>
+                            <td>${task.task_description}</td>
+                            <td class="text-center">
+                              <input type="checkbox" class="form-check-input form-check-success form-check-glow" name="customCheck" data-task-id="${task.id}" ${checkedAttribute} />
+                              <label class="form-check-label">${task.task_status ? '' : ''}</label>
+                            </td>
+                        </tr>
+                    `;
+                    doneTaskTableBody.innerHTML += newRow;
+                });
+                
+
+              // Filter tasks with task_status = 0
+              const uncompletedTasks = data.data.filter(task => !task.task_status);
+              const uncompletedTaskCount = uncompletedTasks.length;
+              const uncompletedTaskCountElement = document.getElementById('uncompleted-task-count');
+              uncompletedTaskCountElement.textContent = uncompletedTaskCount.toString();
+              
+              // Add event listener for checkboxes
+              
+              const checkboxes = document.querySelectorAll('input[name="customCheck"]');
+              checkboxes.forEach(checkbox => {
+                  checkbox.addEventListener('change', function() {
+                      const taskId = this.getAttribute('data-task-id');
+                      const isChecked = this.checked;
+                      updateTaskStatus(taskId, isChecked);
+                  });
+              });
+
+
+              //Filter Completed Task
+              const completedTasks = data.data.filter(task => task.task_status);
+              const completedTaskCount = completedTasks.length;
+              const completedTaskCountElement = document.getElementById('completed-task-count');
+              completedTaskCountElement.textContent = completedTaskCount.toString();
+          })
+          .catch(error => {
+              console.error('Error fetching data:', error);
+          });
+
+
+
+          function updateTaskStatus(taskId, isChecked) {
+          fetch(`/tasks/${taskId}`, {
+              method: 'PUT',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ task_status: isChecked })
+          })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Failed to update task status');
+              }
+              return response.json();
+          })
+          .then(data => {
+              console.log('Task status updated:', data);
+              location.reload();
+              // Update UI or perform other actions as needed
+          })
+          .catch(error => {
+              console.error('Error updating task status:', error);
+          });
+      }
+    </script>
+
+    
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          const form = document.querySelector('#taskForm');
+
+          form.addEventListener('submit', function (event) {
+              event.preventDefault(); // Prevent default form submission
+
+              // Collect form data
+              const taskName = document.querySelector('#task_name').value;
+              const taskDescription = document.querySelector('#task_description').value;
+
+              // Send POST request to create task
+              fetch('/tasks', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                      task_name: taskName,
+                      task_description: taskDescription
+                  })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  // Handle response, maybe show a success message or update UI
+                  console.log('Task created:', data);
+                  // Close the modal after task creation
+                  const modal = document.querySelector('#inlineForm');
+                  const bootstrapModal = bootstrap.Modal.getInstance(modal);
+                  bootstrapModal.hide();
+                  location.reload();
+              })
+              .catch(error => {
+                  console.error('Error creating task:', error);
+              });
+          });
+      });
+    </script>
+
+  
+  
+  
+  </body>
+</html>
