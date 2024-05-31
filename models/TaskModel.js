@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes } from "sequelize";
 import config from "../config/config.js";
+import User from "./UserModel.js"; // Import the User model
 
 // Importing environment variables and configuring Sequelize
 const { DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_DIALECT } = process.env;
@@ -12,7 +13,7 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
 const Task = sequelize.define(
   "Task",
   {
-    id: {
+    id_task: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -30,6 +31,11 @@ const Task = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    id_user: {
+      // Add this line to define the foreign key
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
   },
   {

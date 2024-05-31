@@ -36,7 +36,7 @@
                           <h6 class="text-muted font-semibold">
                             Undone Task
                           </h6>
-                          <h6 class="font-extrabold mb-0" id="uncompleted-task-count">Loading...</h6>
+                          <h6 class="font-extrabold mb-0" id="uncompleted-task-count">0</h6>
                         </div>
                       </div>
                     </div>
@@ -55,7 +55,7 @@
                         </div>
                         <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                           <h6 class="text-muted font-semibold">Task Done</h6>
-                          <h6 class="font-extrabold mb-0" id="completed-task-count">Loading...</h6>
+                          <h6 class="font-extrabold mb-0" id="completed-task-count">0</h6>
                         </div>
                       </div>
                     </div>
@@ -112,7 +112,7 @@
                                 <i data-feather="x"></i>
                               </button>
                             </div>
-                            <form action="/tasks" method="post" id="taskForm">
+                            <form action="/tasks" method="POST" id="taskForm">
                               <div class="modal-body">
                                 <label for="task_name">Task Name: </label>
                                 <div class="form-group">
@@ -224,13 +224,19 @@
 
 
     <script>
-      // Fetch JSON data from API endpoint
-      fetch('/tasks')
+      document.addEventListener('DOMContentLoaded', function () {
+          // Fetch JSON data from API endpoint
+          fetch('/tasks', {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // Add JWT token here
+              }
+          })
           .then(response => response.json())
           .then(data => {
               const taskTableBody = document.querySelector('#task-table tbody');
               const uncompletedTask = data.data.filter(task => task.task_status === false);
-
   
               // Iterate through the data array and generate table rows
               uncompletedTask.forEach(task => {
@@ -239,41 +245,38 @@
   
                   const newRow = `
                       <tr>
-                          <td>${task.id}</td>
+                          <td>${task.id_task}</td>
                           <td>${task.task_name}</td>
                           <td>${task.task_description}</td>
                           <td class="text-center">
-                            <input type="checkbox" class="form-check-input form-check-success form-check-glow" name="customCheck" data-task-id="${task.id}" ${checkedAttribute} />
+                            <input type="checkbox" class="form-check-input form-check-success form-check-glow" name="customCheck" data-task-id="${task.id_task}" ${checkedAttribute} />
                             <label class="form-check-label">${task.task_status ? '' : ''}</label>
                           </td>
                       </tr>
                   `;
                   taskTableBody.innerHTML += newRow;
-                  
               });
-
-
-                const doneTaskTableBody = document.querySelector('#done-task-table tbody');
-                const completedTask = data.data.filter(task => task.task_status === true);
-                completedTask.forEach(task => {
-                    // Determine if the task is done (checked) or not (unchecked)
-                    const checkedAttribute = task.task_status ? 'checked' : '';
-    
-                    const newRow = `
-                        <tr>
-                            <td>${task.id}</td>
-                            <td>${task.task_name}</td>
-                            <td>${task.task_description}</td>
-                            <td class="text-center">
-                              <input type="checkbox" class="form-check-input form-check-success form-check-glow" name="customCheck" data-task-id="${task.id}" ${checkedAttribute} />
-                              <label class="form-check-label">${task.task_status ? '' : ''}</label>
-                            </td>
-                        </tr>
-                    `;
-                    doneTaskTableBody.innerHTML += newRow;
-                });
-                
-
+  
+              const doneTaskTableBody = document.querySelector('#done-task-table tbody');
+              const completedTask = data.data.filter(task => task.task_status === true);
+              completedTask.forEach(task => {
+                  // Determine if the task is done (checked) or not (unchecked)
+                  const checkedAttribute = task.task_status ? 'checked' : '';
+  
+                  const newRow = `
+                      <tr>
+                          <td>${task.id_task}</td>
+                          <td>${task.task_name}</td>
+                          <td>${task.task_description}</td>
+                          <td class="text-center">
+                            <input type="checkbox" class="form-check-input form-check-success form-check-glow" name="customCheck" data-task-id="${task.id_task}" ${checkedAttribute} />
+                            <label class="form-check-label">${task.task_status ? '' : ''}</label>
+                          </td>
+                      </tr>
+                  `;
+                  doneTaskTableBody.innerHTML += newRow;
+              });
+  
               // Filter tasks with task_status = 0
               const uncompletedTasks = data.data.filter(task => !task.task_status);
               const uncompletedTaskCount = uncompletedTasks.length;
@@ -281,7 +284,6 @@
               uncompletedTaskCountElement.textContent = uncompletedTaskCount.toString();
               
               // Add event listener for checkboxes
-              
               const checkboxes = document.querySelectorAll('input[name="customCheck"]');
               checkboxes.forEach(checkbox => {
                   checkbox.addEventListener('change', function() {
@@ -290,9 +292,8 @@
                       updateTaskStatus(taskId, isChecked);
                   });
               });
-
-
-              //Filter Completed Task
+  
+              // Filter Completed Task
               const completedTasks = data.data.filter(task => task.task_status);
               const completedTaskCount = completedTasks.length;
               const completedTaskCountElement = document.getElementById('completed-task-count');
@@ -301,33 +302,69 @@
           .catch(error => {
               console.error('Error fetching data:', error);
           });
-
-
-
+  
           function updateTaskStatus(taskId, isChecked) {
-          fetch(`/tasks/${taskId}`, {
-              method: 'PUT',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ task_status: isChecked })
-          })
-          .then(response => {
-              if (!response.ok) {
-                  throw new Error('Failed to update task status');
-              }
-              return response.json();
-          })
-          .then(data => {
-              console.log('Task status updated:', data);
-              location.reload();
-              // Update UI or perform other actions as needed
-          })
-          .catch(error => {
-              console.error('Error updating task status:', error);
+              fetch(`/tasks/${taskId}`, {
+                  method: 'PUT',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // Add JWT token here
+                  },
+                  body: JSON.stringify({ task_status: isChecked })
+              })
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Failed to update task status');
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  console.log('Task status updated:', data);
+                  location.reload();
+                  // Update UI or perform other actions as needed
+              })
+              .catch(error => {
+                  console.error('Error updating task status:', error);
+              });
+          }
+  
+          const form = document.querySelector('#taskForm');
+          form.addEventListener('submit', function (event) {
+              event.preventDefault(); // Prevent default form submission
+  
+              // Collect form data
+              const taskName = document.querySelector('#task_name').value;
+              const taskDescription = document.querySelector('#task_description').value;
+  
+              // Send POST request to create task
+              fetch('/tasks', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // Add JWT token here
+                  },
+                  body: JSON.stringify({
+                      task_name: taskName,
+                      task_description: taskDescription
+                  })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  // Handle response, maybe show a success message or update UI
+                  console.log('Task created:', data);
+                  // Close the modal after task creation
+                  const modal = document.querySelector('#inlineForm');
+                  const bootstrapModal = bootstrap.Modal.getInstance(modal);
+                  bootstrapModal.hide();
+                  location.reload();
+              })
+              .catch(error => {
+                  console.error('Error creating task:', error);
+              });
           });
-      }
-    </script>
+      });
+  </script>
+  
 
     
 

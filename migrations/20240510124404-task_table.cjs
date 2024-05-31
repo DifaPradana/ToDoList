@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("tasks", {
-      id: {
+      id_task: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -34,6 +34,16 @@ module.exports = {
         defaultValue: Sequelize.literal(
           "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
         ),
+      },
+      id_user: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id_user",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
     });
   },

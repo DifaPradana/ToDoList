@@ -1,4 +1,4 @@
-import Task from "../models/Task.js";
+import Task from "../models/TaskModel.js";
 
 export const createTask = async (req, res) => {
   const { task_name, task_description } = req.body;
@@ -6,6 +6,7 @@ export const createTask = async (req, res) => {
     const task = await Task.create({
       task_name,
       task_description,
+      id_user: req.id_user,
     });
     return res.status(201).json({
       status: "success",
@@ -21,7 +22,7 @@ export const createTask = async (req, res) => {
 
 export const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.findAll();
+    const tasks = await Task.findAll({ where: { id_user: req.id_user } });
     return res.status(200).json({
       status: "success",
       data: tasks,
@@ -35,16 +36,21 @@ export const getTasks = async (req, res) => {
 };
 
 export const editTask = async (req, res) => {
-  const task = await Task.findOne({ where: { id: req.params.id } });
-  if (!task) {
-    return res.status(404).json({
-      status: "error",
-      message: "Task not found",
-    });
-  }
-  const { task_status } = req.body; // Mendapatkan status tugas dari permintaan
   try {
-    await Task.update({ task_status }, { where: { id: req.params.id } }); // Memperbarui status tugas
+    const task = await Task.findOne({
+      where: { id_task: req.params.id, id_user: req.id_user },
+    });
+    if (!task) {
+      return res.status(404).json({
+        status: "error",
+        message: "Task not found",
+      });
+    }
+    const { task_status } = req.body;
+    await Task.update(
+      { task_status },
+      { where: { id_task: req.params.id, id_user: req.id_user } }
+    );
     return res.status(200).json({
       status: "success",
       message: "Task status updated",
@@ -59,7 +65,9 @@ export const editTask = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
   try {
-    const task = await Task.findByPk(req.params.id);
+    const task = await Task.findOne({
+      where: { id: req.params.id, id_user: req.id_user },
+    });
     if (!task) {
       return res.status(404).json({
         status: "error",
