@@ -55,7 +55,7 @@ export const Login = async (req, res) => {
     const accessToken = jwt.sign(
       { id_user }, // Include all relevant user data
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "365d" } // Adjust the expiration time as needed
+      { expiresIn: "1m" } // Adjust the expiration time as needed
     );
 
     const refreshToken = jwt.sign(
@@ -78,13 +78,11 @@ export const Login = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24, // 1 day in milliseconds
     });
-    return res
-      .status(200)
-      .json({
-        status_code: 200,
-        message: "Login successfully",
-        data: { accessToken },
-      });
+    return res.status(200).json({
+      status_code: 200,
+      message: "Login successfully",
+      data: { accessToken, refreshToken },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

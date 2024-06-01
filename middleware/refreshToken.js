@@ -19,7 +19,7 @@ export const refreshToken = async (req, res) => {
       const accessToken = jwt.sign(
         { id_user },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "30m" }
+        { expiresIn: "1m" }
       );
 
       // Kirim access token ke client
