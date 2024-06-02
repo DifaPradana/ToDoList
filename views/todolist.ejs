@@ -129,7 +129,7 @@
                                   <input
                                     id="task_description"
                                     type="text"
-                                    placeholder="Task Name"
+                                    placeholder="Task Description"
                                     class="form-control"
                                     name="task_description"
                                   />
@@ -165,7 +165,7 @@
                       <table class="table table-lg" id="task-table">
                         <thead>
                           <tr>
-                            <th>ID</th>
+                            <th>NO</th> <!-- Change header to "NO" -->
                             <th>TASK NAME</th>
                             <th>DESKRIPSI</th>
                             <th class="text-center">Status</th>
@@ -196,7 +196,7 @@
                       <table class="table table-lg" id="done-task-table">
                         <thead>
                           <tr>
-                            <th>ID</th>
+                            <th>NO</th> <!-- Change header to "NO" -->
                             <th>TASK NAME</th>
                             <th>DESKRIPSI</th>
                             <th class="text-center">Status</th>
@@ -212,16 +212,12 @@
               </div>
             </div>
           </section>
-          
-
-
         </div>
 
         <%- include('partials/footer') %>
       </div>
     </div>
     <%- include('partials/script') %>
-
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
@@ -232,35 +228,35 @@
                   options.headers = {};
               }
               options.headers['Authorization'] = `Bearer ${token}`;
-    
+
               let response = await fetch(url, options);
               let data = await response.json();
-    
+
               if (data.message === 'token_expired') {
                   await refreshToken();
                   options.headers['Authorization'] = `Bearer ${localStorage.getItem('accessToken')}`;
                   response = await fetch(url, options);
                   data = await response.json();
               }
-    
+
               return data;
           }
-    
+
           // Function to refresh the access token
           async function refreshToken() {
               const response = await fetch('/refresh-token', {
                   method: 'POST',
                   credentials: 'include', // Include cookies in the request
               });
-    
+
               if (!response.ok) {
                   throw new Error('Failed to refresh token');
               }
-    
+
               const data = await response.json();
               localStorage.setItem('accessToken', data.accessToken);
           }
-    
+
           // Function to fetch tasks
           async function fetchTasks() {
               try {
@@ -271,22 +267,22 @@
                   console.error('Error fetching tasks:', error);
               }
           }
-    
+
           // Function to display tasks (example)
           function displayTasks(tasks) {
               const taskTableBody = document.querySelector('#task-table tbody');
               const uncompletedTask = tasks.filter(task => task.task_status === false);
-    
+
               // Clear existing rows
               taskTableBody.innerHTML = '';
-    
+
               // Iterate through the data array and generate table rows
-              uncompletedTask.forEach(task => {
+              uncompletedTask.forEach((task, index) => {
                   const checkedAttribute = task.task_status ? 'checked' : '';
-    
+
                   const newRow = `
                       <tr>
-                          <td>${task.id_task}</td>
+                          <td>${index + 1}</td> <!-- Displaying sequential number -->
                           <td>${task.task_name}</td>
                           <td>${task.task_description}</td>
                           <td class="text-center">
@@ -297,15 +293,15 @@
                   `;
                   taskTableBody.innerHTML += newRow;
               });
-    
+
               const doneTaskTableBody = document.querySelector('#done-task-table tbody');
               const completedTask = tasks.filter(task => task.task_status === true);
-              completedTask.forEach(task => {
+              completedTask.forEach((task, index) => {
                   const checkedAttribute = task.task_status ? 'checked' : '';
-    
+
                   const newRow = `
                       <tr>
-                          <td>${task.id_task}</td>
+                          <td>${index + 1}</td> <!-- Displaying sequential number -->
                           <td>${task.task_name}</td>
                           <td>${task.task_description}</td>
                           <td class="text-center">
@@ -316,7 +312,7 @@
                   `;
                   doneTaskTableBody.innerHTML += newRow;
               });
-    
+
               // Filter tasks with task_status = 0
               const uncompletedTasks = tasks.filter(task => !task.task_status);
               const uncompletedTaskCount = uncompletedTasks.length;
@@ -332,14 +328,14 @@
                       updateTaskStatus(taskId, isChecked);
                   });
               });
-    
+
               // Filter Completed Task
               const completedTasks = tasks.filter(task => task.task_status);
               const completedTaskCount = completedTasks.length;
               const completedTaskCountElement = document.getElementById('completed-task-count');
               completedTaskCountElement.textContent = completedTaskCount.toString();
           }
-    
+
           // Function to update task status
           async function updateTaskStatus(taskId, isChecked) {
               try {
@@ -356,15 +352,15 @@
                   console.error('Error updating task status:', error);
               }
           }
-    
+
           const form = document.querySelector('#taskForm');
           form.addEventListener('submit', async function (event) {
               event.preventDefault(); // Prevent default form submission
-    
+
               // Collect form data
               const taskName = document.querySelector('#task_name').value;
               const taskDescription = document.querySelector('#task_description').value;
-    
+
               try {
                   const data = await apiFetch('/tasks', {
                       method: 'POST',
@@ -386,15 +382,10 @@
                   console.error('Error creating task:', error);
               }
           });
-    
+
           // Initialize and fetch tasks on page load
           fetchTasks();
       });
     </script>
-    
-
-  
-  
-  
   </body>
 </html>
