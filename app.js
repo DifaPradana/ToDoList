@@ -13,21 +13,21 @@ dotenv.config();
 const app = express();
 app.use(cookieParser());
 
-const mqttClient = mqtt.connect("www://broker.mqtt-dashboard.com");
+// const mqttClient = mqtt.connect("www://broker.mqtt-dashboard.com");
 
-mqttClient.on("connect", () => {
-  console.log("Connected to MQTT broker at broker.mqtt-dashboard.com");
-  mqttClient.subscribe("do_to_learn/piranti_bergerak", (err) => {
-    if (!err) {
-      console.log("Subscribed to do_to_learn/piranti_bergerak");
-    }
-  });
-});
+// mqttClient.on("connect", () => {
+//   console.log("Connected to MQTT broker at broker.mqtt-dashboard.com");
+//   mqttClient.subscribe("do_to_learn/piranti_bergerak", (err) => {
+//     if (!err) {
+//       console.log("Subscribed to do_to_learn/piranti_bergerak");
+//     }
+//   });
+// });
 
-mqttClient.on("message", (topic, message) => {
-  // message is Buffer
-  console.log(`Received message: ${message.toString()} on topic: ${topic}`);
-});
+// mqttClient.on("message", (topic, message) => {
+//   // message is Buffer
+//   console.log(`Received message: ${message.toString()} on topic: ${topic}`);
+// });
 
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: true })); // Menggunakan true untuk mendukung parsing nested objects
@@ -45,4 +45,4 @@ app.use(UserRoute);
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
-export { mqttClient };
+// export { mqttClient };

@@ -1,5 +1,5 @@
 import Task from "../models/TaskModel.js";
-import { mqttClient } from "../app.js"; // Import the MQTT client
+// import { mqttClient } from "../app.js"; // Import the MQTT client
 
 export const createTask = async (req, res) => {
   const { task_name, task_description } = req.body;
@@ -60,22 +60,22 @@ export const editTask = async (req, res) => {
       where: { task_status: false, id_user: req.id_user },
     });
 
-    if (count === 0) {
-      // Perform action when there are no tasks with task_status = false
-      const message = "All tasks are complete";
-      mqttClient.publish("do_to_learn/piranti_bergerak", message, (err) => {
-        if (err) {
-          console.error("Failed to publish MQTT message", err);
-        } else {
-          console.log(`MQTT message sent: ${message}`);
-        }
-      });
-    }
+    // if (count === 0) {
+    //   // Perform action when there are no tasks with task_status = false
+    //   const message = "All tasks are complete";
+    //   mqttClient.publish("do_to_learn/piranti_bergerak", message, (err) => {
+    //     if (err) {
+    //       console.error("Failed to publish MQTT message", err);
+    //     } else {
+    //       console.log(`MQTT message sent: ${message}`);
+    //     }
+    //   });
+    // }
 
     return res.status(200).json({
       status: "success",
       message: "Task status updated",
-      count: count,
+      Undone_Task: count,
     });
   } catch (error) {
     return res.status(500).json({

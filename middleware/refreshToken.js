@@ -3,7 +3,7 @@ import User from "../models/UserModel.js";
 
 export const refreshToken = async (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
     if (!refreshToken) return res.sendStatus(401);
 
     // Mencari pengguna berdasarkan refreshToken
