@@ -17,6 +17,7 @@
     "jade": "^0.29.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "~1.9.1",
+    "mqtt": "^5.7.0",
     "mysql2": "^3.9.7",
     "sequelize": "^6.37.3",
     "sequelize-cli": "^6.6.2"
