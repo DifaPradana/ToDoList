@@ -89,7 +89,7 @@ export const editTask = async (req, res) => {
 export const deleteTask = async (req, res) => {
   try {
     const task = await Task.findOne({
-      where: { id: req.params.id, id_user: req.id_user },
+      where: { id_task: req.params.id, id_user: req.id_user },
     });
     if (!task) {
       return res.status(404).json({
