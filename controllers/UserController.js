@@ -2,7 +2,6 @@ import argon2d, { hash } from "argon2";
 import User from "../models/UserModel.js";
 import jwt from "jsonwebtoken";
 import responses from "../response.js";
-import { refreshToken } from "../middleware/refreshToken.js";
 
 export const createUser = async (req, res) => {
   const { username, email, password, confirmPassword } = req.body;
@@ -19,6 +18,7 @@ export const createUser = async (req, res) => {
     return res.status(400).json({ message: "Username sudah digunakan" });
   }
 
+  // Menggunakan argon2 untuk mengenkripsi password
   const hashPassword = await argon2d.hash(password);
   try {
     const user = await User.create({
@@ -41,6 +41,7 @@ export const Login = async (req, res) => {
     });
     if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
 
+    //Menggunakan argon2 untuk memverifikasi password
     const validPassword = await argon2d.verify(
       user.password,
       req.body.password
@@ -51,13 +52,14 @@ export const Login = async (req, res) => {
     // Password Correct
 
     // Generate JWT token
-    const { id_user } = user; // Destructure user data
+    const { id_user } = user;
     const accessToken = jwt.sign(
-      { id_user }, // Include all relevant user data
+      { id_user },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "10m" } // Adjust the expiration time as needed
+      { expiresIn: "10m" } // Atur waktu kadaluarsa
     );
 
+    // Generate Refresh Token
     const refreshToken = jwt.sign(
       {
         user: {
@@ -65,18 +67,16 @@ export const Login = async (req, res) => {
         },
       },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "1d" } // Adjust the expiration time as needed
+      { expiresIn: "1d" } // Atur waktu kadaluarsa
     );
 
+    // Simpan refresh token ke database
     await User.update(
       { refreshToken: refreshToken },
       { where: { id_user: user.id_user } }
     );
-
-    // req.session.id_user = user.id_user;
-
     res.cookie("refreshToken", refreshToken, {
-      maxAge: 1000 * 60 * 60 * 24, // 1 day in milliseconds
+      maxAge: 1000 * 60 * 60 * 24, // 1 day dalam milliseconds
     });
     return res.status(200).json({
       status_code: 200,

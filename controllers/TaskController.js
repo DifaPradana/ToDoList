@@ -23,6 +23,7 @@ export const createTask = async (req, res) => {
 
 export const getTasks = async (req, res) => {
   try {
+    // Carilah semua task yang dimiliki oleh user yang sedang login
     const tasks = await Task.findAll({ where: { id_user: req.id_user } });
 
     return res.status(200).json({
